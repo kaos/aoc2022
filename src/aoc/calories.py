@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from itertools import takewhile
+from itertools import islice, takewhile
 from operator import itemgetter
 from typing import Iterator, NewType
 
@@ -19,7 +19,23 @@ class CaloriesInventory:
     inventory: tuple[Calories, ...]
 
     def elf_carrying_most_calories(self) -> tuple[Elf, Calories]:
-        idx, cals = max(enumerate(self.inventory), key=itemgetter(1))
+        return self._get_max(self.inventory)
+
+    def top_elves_carrying_most_calories(self) -> Iterator[tuple[Elf, Calories]]:
+        inventory = self.inventory
+        for _ in range(len(inventory)):
+            elf, cals = self._get_max(inventory)
+            yield elf, cals
+            inventory = inventory[:elf] + (Calories(0),) + inventory[elf + 1 :]
+
+    def total_calories_carried_by(self, top_elves: int) -> Calories:
+        return Calories(
+            sum(map(itemgetter(1), islice(self.top_elves_carrying_most_calories(), top_elves)))
+        )
+
+    @staticmethod
+    def _get_max(inventory: tuple[Calories, ...]) -> tuple[Elf, Calories]:
+        idx, cals = max(enumerate(inventory), key=itemgetter(1))
         return Elf(idx), Calories(cals)
 
 
