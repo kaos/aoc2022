@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from underpants.engine import RulesEngine
-from typing import TypeVar
-import aoc.register  # noqa: F401
+from typing import Any, TypeVar
 
+from underpants.engine import RulesEngine
+
+import aoc.register  # noqa: F401
 
 T = TypeVar("T")
 

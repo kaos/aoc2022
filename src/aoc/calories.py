@@ -1,9 +1,9 @@
-from pants.engine.rules import collect_rules, rule, Get, QueryRule
 from dataclasses import dataclass
-from typing import Iterator, NewType
-from itertools import count, takewhile
+from itertools import takewhile
 from operator import itemgetter
+from typing import Iterator, NewType
 
+from pants.engine.rules import QueryRule, collect_rules, rule
 
 Elf = NewType("Elf", int)
 Calories = NewType("Calories", int)
@@ -25,7 +25,7 @@ class CaloriesInventory:
 
 def split_inventory_per_elf(elves_inventories: str) -> Iterator[list[str]]:
     lines_it = iter(elves_inventories.splitlines())
-    
+
     while True:
         elf_inventory = list(takewhile(bool, lines_it))
         if not elf_inventory:
@@ -37,7 +37,8 @@ def split_inventory_per_elf(elves_inventories: str) -> Iterator[list[str]]:
 async def parse_calories_inventory(request: CaloriesInventoryRequest) -> CaloriesInventory:
     return CaloriesInventory(
         tuple(
-            sum(map(int, elf_inventory)) for elf_inventory in split_inventory_per_elf(request.elves_inventories)
+            Calories(sum(map(int, elf_inventory)))
+            for elf_inventory in split_inventory_per_elf(request.elves_inventories)
         )
     )
 

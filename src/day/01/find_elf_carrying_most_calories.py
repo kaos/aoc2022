@@ -1,6 +1,7 @@
 import click
+
+from aoc.calories import CaloriesInventory, CaloriesInventoryRequest
 from aoc.engine import request
-from aoc.calories import CaloriesInventoryRequest, CaloriesInventory
 
 
 @click.command

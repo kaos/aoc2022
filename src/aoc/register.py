@@ -2,6 +2,4 @@ from aoc import calories
 
 
 def rules():
-    return (
-        *calories.rules(),
-    )
+    return (*calories.rules(),)
