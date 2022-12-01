@@ -1,0 +1,30 @@
+[GLOBAL]
+pants_version = "2.14.0"
+backend_packages = [
+  "pants.backend.experimental.python",
+  "pants.backend.python",
+  "pants.backend.python.lint.black",
+  "pants.backend.python.lint.docformatter",
+  "pants.backend.python.lint.flake8",
+  "pants.backend.python.lint.isort",
+  "pants.backend.python.typecheck.mypy",
+]
+
+[anonymous-telemetry]
+enabled = true
+repo_id = "336EC375-B2BA-48AA-B3FC-028F63AFDF2A"
+
+
+[mypy]
+args = "--namespace-packages --explicit-package-bases"
+
+
+[python]
+interpreter_constraints = [">=3.9, <3.10"]
+enable_resolves = true
+
+[python.resolves]
+python-default = "default.lock"
+
+[cli.alias]
+day-01 = "src/day/01/find_elf_carrying_most_calories.py -- inputs/day_01.txt"
