@@ -1,3 +1,4 @@
 click
 pantsbuild.pants==2.14.0
+pytest
 underpants==0.2.4

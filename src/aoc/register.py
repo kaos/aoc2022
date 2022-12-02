@@ -1,5 +1,5 @@
-from aoc import calories
+from aoc import calories, games
 
 
 def rules():
-    return (*calories.rules(),)
+    return (*calories.rules(), *games.rules())
