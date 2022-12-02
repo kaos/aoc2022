@@ -59,3 +59,4 @@ class Tournament:
 @dataclass(frozen=True)
 class TournamentRequest:
     strategy: str
+    player_b_peek_at_a: bool = False
