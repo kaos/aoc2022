@@ -30,5 +30,4 @@ python-default = "default.lock"
 [cli.alias]
 day-01 = "src/day/01/find_elf_carrying_most_calories.py -- inputs/day_01.txt"
 day-02 = "src/day/02/run_rock_paper_scissors_tournament.py -- inputs/day_02.txt"
-# For Day 2 part 2, run:
-# ./pants run day-02 --part-two
+day-03 = "src/day/03/rucksack_reorganization.py -- inputs/day_03.txt"

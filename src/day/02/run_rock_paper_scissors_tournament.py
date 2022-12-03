@@ -15,6 +15,14 @@ def main(strategy, part_two):
         f"According to the strategy guide, I would get a total score of {tournament.total_score_player_b()} points."
     )
 
+    if not part_two:
+        print(
+            "\nPsst. The Elf came back and told me how to interpret the second column of the strategy,"
+            " run this again to get the correct answer:\n\n"
+            "  ./pants run day-02 --part-two"
+            "\n\n"
+        )
+
 
 if __name__ == "__main__":
     main()
