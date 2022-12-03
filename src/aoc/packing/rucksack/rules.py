@@ -47,16 +47,40 @@ def analyse_rucksack(rucksack: Rucksack) -> AnalysedRucksack:
 
 @rule
 def parse_rucksack_contents(request: RucksackRequest) -> Rucksack:
-    middle = len(request.contents) // 2
-    return Rucksack((request.contents[:middle], request.contents[middle:]))
+    compartment_size = len(request.contents) // request.compartments
+    return Rucksack(
+        tuple(
+            request.contents[i : i + compartment_size].strip()
+            for i in range(0, len(request.contents), compartment_size)
+        )
+    )
 
 
 @rule
 async def analyse_contents(request: AnalysedContentsRequest) -> AnalysedContents:
-    rucksacks = await MultiGet(
-        Get(AnalysedRucksack, RucksackRequest(contents))
-        for contents in request.all_contents.splitlines()
-    )
+    if request.group_size == 1:
+        # Calculate priority based on the two compartments in each rucksack.
+        rucksacks = await MultiGet(
+            Get(AnalysedRucksack, RucksackRequest(contents, 2))
+            for contents in request.all_contents.splitlines()
+        )
+    else:
+        # Calculate priority based on the rucksack contents in the group.
+        # We treat each rucksack in the group as a compartment in the "group rucksack".
+        # This is a hacky solution; not pretty :grimacing:
+        lines = request.all_contents.splitlines()
+        rucksacks = await MultiGet(
+            Get(
+                AnalysedRucksack,
+                RucksackRequest(
+                    "".join(c.ljust(max(len(c) for c in contents)) for c in contents),
+                    request.group_size,
+                ),
+            )
+            for contents in [
+                lines[i : i + request.group_size] for i in range(0, len(lines), request.group_size)
+            ]
+        )
 
     return AnalysedContents(sum(rucksack.priority for rucksack in rucksacks))
 

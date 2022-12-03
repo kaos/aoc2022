@@ -11,13 +11,15 @@ class Rucksack:
 @dataclass(frozen=True)
 class RucksackRequest:
     contents: str
+    compartments: int
 
 
 @dataclass(frozen=True)
 class AnalysedContents:
-    total_mispackaged: int
+    priority_sum: int
 
 
 @dataclass(frozen=True)
 class AnalysedContentsRequest:
     all_contents: str
+    group_size: int
