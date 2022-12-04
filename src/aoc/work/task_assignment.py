@@ -38,6 +38,12 @@ class Team:
     def contained_work(self) -> bool:
         return any(w1.section_ids.issubset(w2.section_ids) for w1, w2 in permutations(self.work, 2))
 
+    @property
+    def overlap_work(self) -> bool:
+        return any(
+            not w1.section_ids.isdisjoint(w2.section_ids) for w1, w2 in permutations(self.work, 2)
+        )
+
 
 class Teams(Collection[Team]):
     @classmethod
@@ -47,6 +53,10 @@ class Teams(Collection[Team]):
     @property
     def fully_contained_work(self) -> int:
         return sum(1 if team.contained_work else 0 for team in self)
+
+    @property
+    def partially_contained_work(self) -> int:
+        return sum(1 if team.overlap_work else 0 for team in self)
 
 
 @dataclass(frozen=True)

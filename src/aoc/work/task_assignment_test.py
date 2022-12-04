@@ -42,3 +42,8 @@ def test_example_input_part_1(engine: RulesEngine) -> None:
     teams = engine.request(Teams, SectionAssignments(example_input))
     assert "\n\n".join(str(team) for team in teams) == pretty_print_assignments
     assert teams.fully_contained_work == 2
+
+
+def test_example_input_part_2(engine: RulesEngine) -> None:
+    teams = engine.request(Teams, SectionAssignments(example_input))
+    assert teams.partially_contained_work == 4
