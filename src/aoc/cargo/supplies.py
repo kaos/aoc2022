@@ -32,6 +32,7 @@ class RawManifest:
     followed by the procedures in how to move the stacked crates around."""
 
     manifest: str
+    crate_mover: str
 
     def parsed_manifest(self) -> tuple[tuple[str, ...], tuple[str, ...]]:
         lines = self.manifest.splitlines()

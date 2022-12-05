@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Iterable, Iterator
+from typing import Iterable, Iterator, Sequence
 
 from pants.engine.collection import Collection
 from pants.engine.rules import Get, MultiGet, QueryRule, collect_rules, rule
@@ -16,15 +16,38 @@ class MoveCratesPlan:
     from_stack: int
     to_stack: int
 
+    @classmethod
+    def get_crate_mover(cls, name: str) -> type[MoveCratesPlan]:
+        for mover in cls.__subclasses__():
+            if mover.__name__ == name:
+                return mover
+        raise NotImplementedError()
+
+    @staticmethod
+    def _move_crates(crates: Sequence[Crate]) -> Iterable[Crate]:
+        raise NotImplementedError()
+
     def execute(self, stacks: list[Stack]) -> Stacks:
         stacks[self.to_stack - 1] = Stack.create(
-            tuple(reversed(stacks[self.from_stack - 1][: self.number_of_crates]))
+            tuple(self._move_crates(stacks[self.from_stack - 1][: self.number_of_crates]))
             + stacks[self.to_stack - 1]
         )
         stacks[self.from_stack - 1] = Stack.create(
             stacks[self.from_stack - 1][self.number_of_crates :]
         )
         return Stacks(stacks)
+
+
+class CrateMover9000(MoveCratesPlan):
+    @staticmethod
+    def _move_crates(crates: Sequence[Crate]) -> Iterable[Crate]:
+        return reversed(crates)
+
+
+class CrateMover9001(MoveCratesPlan):
+    @staticmethod
+    def _move_crates(crates: Sequence[Crate]) -> Iterable[Crate]:
+        return crates
 
 
 @dataclass(frozen=True)
@@ -68,6 +91,7 @@ class StacksDrawing:
 @dataclass(frozen=True)
 class RawProcedure:
     instructions: tuple[str, ...]
+    crate_mover: type[MoveCratesPlan]
 
 
 @rule
@@ -80,7 +104,7 @@ def parse_stacks_drawing(stacks: StacksDrawing) -> Stacks:
 @rule
 def parse_procedure_instructions(procedure: RawProcedure) -> Procedure:
     return Procedure.create(
-        MoveCratesPlan(*map(int, m.groups()))
+        procedure.crate_mover(*map(int, m.groups()))
         for m in (
             re.match(r"move (\d+) from (\d+) to (\d+)", line) for line in procedure.instructions
         )
@@ -93,7 +117,7 @@ async def parse_manifest(raw: RawManifest) -> RearrangeStacksRequest:
     drawing, instructions = raw.parsed_manifest()
     stacks, procedure = await MultiGet(
         Get(Stacks, StacksDrawing(drawing)),
-        Get(Procedure, RawProcedure(instructions)),
+        Get(Procedure, RawProcedure(instructions, MoveCratesPlan.get_crate_mover(raw.crate_mover))),
     )
     return RearrangeStacksRequest(
         starting_layout=stacks,

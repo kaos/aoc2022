@@ -16,7 +16,7 @@ move 1 from 1 to 2
 
 
 def test_parse_raw_manifest() -> None:
-    manifest = RawManifest(example_input)
+    manifest = RawManifest(example_input, "")
     sections = manifest.parsed_manifest()
     lines = example_input.splitlines()
     assert sections[0] == tuple(lines[:4])

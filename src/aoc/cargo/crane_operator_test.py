@@ -25,12 +25,15 @@ def engine() -> RulesEngine:
 
 
 def test_crane_operator(engine: RulesEngine) -> None:
-    stacks = engine.request(Stacks, RawManifest(example_input))
+    stacks = engine.request(Stacks, RawManifest(example_input, "CrateMover9000"))
     assert stacks.top_crate_ids() == "CMZ"
+
+    stacks = engine.request(Stacks, RawManifest(example_input, "CrateMover9001"))
+    assert stacks.top_crate_ids() == "MCD"
 
 
 def test_stacks_drawing() -> None:
-    drawing = StacksDrawing(RawManifest(example_input).parsed_manifest()[0])
+    drawing = StacksDrawing(RawManifest(example_input, "").parsed_manifest()[0])
     cols = list(drawing.stack_columns())
     assert cols == [1, 5, 9]
     assert "".join(crate.id for crate in drawing.read_stack(cols[1])) == "DCM"
